@@ -6,8 +6,8 @@ import xlwt
 import time
 
 # 最大停止数量
-overnum=40
-listdata=[]
+overnum = 40
+listdata = []
 
 # 写入数据到  EXCEL
 def OutExcel(data):
@@ -69,9 +69,9 @@ def OutExcel(data):
 
 
 
-shequList=[{
-	"name":"重庆社区",
-	"img":["","",""]
+shequList = [{
+	"name" : "重庆社区",
+	"img" : ["", "", ""]
 }]
 shequName=["重庆社区","南京社区"]
 p=0
