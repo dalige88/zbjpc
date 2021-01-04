@@ -9,12 +9,21 @@ import json
 import urllib
 from selenium import webdriver
 
+# 下载地址
+url_list = []
 # 猪八戒列表
-url='https://chongqing.zbj.com/xcxkfzbjzbj/f.html?fr=zbj.sy.zyyw_2nd.lv2'
+# url='https://chongqing.zbj.com/xcxkfzbjzbj/f.html?fr=zbj.sy.zyyw_2nd.lv2'
+# 网站推广
+url_name='猪八戒服务商'
+# url='https://chongqing.zbj.com/wzkf/f.html'
 
 # 最大停止数量
-overnum=6
+# overnum=4
+overnum=9999999999
 listdata=[]
+chromedriver_url='F:\chromedriver\chromedriver.exe'
+# chromedriver_url='chromedriver.exe'
+
 
 
 # 写入数据到  EXCEL
@@ -36,27 +45,27 @@ def OutExcel(data):
 
     # 添加一个表
     ws = wb.add_sheet('test')
-	
 
     # ws.write(0, 2, '店铺名称', style=style2)
+    ws.write(0, 0, '类型', style=style2)
     ws.write(0, 1, '公司名称', style=style2)
     ws.write(0, 2, '简介', style=style2)
     ws.write(0, 3, '联系电话 / 邮箱地址', style=style2)
     ws.write(0, 4, '公司官网 / 公司地址', style=style2)
 
-	
+
     nums = 1
     for item in data:
         if nums <= len(data):
             # 3个参数分别为行号，列号，和内容
             # 需要注意的是行号和列号都是从0开始的
             # ws.write(nums, 2, item[0], style=style1)
+            ws.write(nums, 0, url_name, style=style1)
             ws.write(nums, 1, item[0], style=style1)
             ws.write(nums, 2, item[1], style=style1)
             ws.write(nums, 3, item[2], style=style1)
             ws.write(nums, 4, item[3], style=style1)
 
-            # print(item[2])
             nums = nums + 1
 
 
@@ -68,6 +77,8 @@ def OutExcel(data):
     wb.save('猪八戒'+str(file_name)+'.xls')
     print('文件保存完毕！（猪八戒'+str(file_name)+'.xls）')
     print('等待中....')
+	# 清空数据
+    listdata_=[]
 
 # urlss="http://aiqicha.baidu.com/s?q=%E5%93%88%E5%B0%94%E6%BB%A8%E5%9C%A3%E8%9E%8D%E7%A7%91%E6%8A%80%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8&t=0"
 url_es="https://aiqicha.baidu.com/"
@@ -75,32 +86,39 @@ url_es="https://aiqicha.baidu.com/"
 # 调用 chromedriver.exe 模拟人工输入
 def GetCookie(serachName):
 	# driver = webdriver.Firefox(executable_path = 'bin\geckodriver.exe')
-    driver = webdriver.Chrome(executable_path = 'F:\chromedriver\chromedriver.exe')
+    driver = webdriver.Chrome(executable_path = chromedriver_url)
     driver.get(url_es)
     driver.find_element_by_xpath('//*[@id="aqc-search-input"]').send_keys(serachName)
 	# driver.find_element_by_id("su").click()
     driver.find_element_by_class_name("search-btn").click()
-	
+
     html = driver.find_element_by_xpath("//*").get_attribute("outerHTML")
-    html=html.split("window.pageData = ")
+    html = html.split("window.pageData = ")
     print(len(html))
-    list_json_data=html[1].split("}};\n\n")
+    list_json_data = html[1].split("}};\n\n")
     list_data = list_json_data[0]+"}}"
     list_dt = json.loads(list_data)
-    pid = list_dt["result"]["resultList"][0]["pid"]
+
+    resultList = list_dt["result"]["resultList"]
+
+    pid = ''
+    if len(resultList) > 0:
+        pid = resultList[0]["pid"]
+	# pid = list_dt["result"]["resultList"][0]["pid"]
+    else:
+        print("没有找到："+serachName)
 
 	#退出
     driver.close()
     driver.quit()
 
-    print(pid)
+    print(resultList)
+    print("不要慌！还没完，后面还有货....")
 
-    # cookie_s=driver.get_cookies()
+	# cookie_s=driver.get_cookies()
 
-    # return cookie_s
+	# return cookie_s
     return pid
-
-# GetCookie(urlss,serachName)
 
 
 
@@ -175,19 +193,6 @@ def palist(http):
 
 			if z>overnum:
 				break
-
-
-		# list_url_s = []
-		# for item in listdata:
-		# 	print(item)
-		# 	url_s = urllib.parse.quote(item)
-		# 	# print(url_s)
-		# 	# GteAll(url_s)
-		# 	# time.sleep(3)
-
-		# 	list_url_s.append("http://aiqicha.baidu.com/s?q=" + url_s + "&t=0")
-
-		# GteAll(list_url_s)
 		GteAll(listdata)
 
 			
@@ -244,26 +249,27 @@ def get_page(urls):
 
 # 获取返回字段
 def GetData(url_list):
-	# pid = GetCookie(url_list)
-	for pid in url_list:
-
+    for pid in url_list:
 		############################ 查询详情 ############################ 
 
-
-		driver = webdriver.Chrome(executable_path = 'F:\chromedriver\chromedriver.exe')
-		driver.get(url_details+str(pid))
+        driver = webdriver.Chrome(executable_path = chromedriver_url)
+        driver.get(url_details+str(pid))
 		
-		entName=driver.find_elements_by_class_name("name")[0].get_attribute('innerText')
-		describe=driver.find_elements_by_class_name("content-info-child-brief")[0].get_attribute('innerText')
-		telephone_email=driver.find_elements_by_class_name("content-info-child")[0].get_attribute('innerText').strip("编辑企业信息")
-		website_addr=driver.find_elements_by_class_name("content-info-child")[1].get_attribute('innerText')
+        entName=driver.find_elements_by_class_name("name")[0].get_attribute('innerText')
+        describe=driver.find_elements_by_class_name("content-info-child-brief")[0].get_attribute('innerText')
+        telephone_email=driver.find_elements_by_class_name("content-info-child")[0].get_attribute('innerText').strip("编辑企业信息")
+        website_addr=driver.find_elements_by_class_name("content-info-child")[1].get_attribute('innerText')
 
-		print("000000000000000000"+telephone_email)
-		print("111111111111111111"+website_addr)
+        print("000000000000000000"+telephone_email)
+        print("111111111111111111"+website_addr)
 
-		listdata_01 = [entName, describe, telephone_email, website_addr]
-		listdata_.append(listdata_01)
-		time.sleep(10)
+        listdata_01 = [entName, describe, telephone_email, website_addr]
+        listdata_.append(listdata_01)
+
+        #退出
+        driver.close()
+        driver.quit()
+        time.sleep(10)
 
 
 
@@ -273,7 +279,9 @@ def GteAll(url_s):
 	list_pid=[]
 
 	for item in url_s:
-		list_pid.append(GetCookie(item))
+		pids = GetCookie(item)
+		if pids != '':
+			list_pid.append(pids)
 		time.sleep(10)
 
 
@@ -281,8 +289,14 @@ def GteAll(url_s):
 	print(list_pid)
 	GetData(list_pid)
 	OutExcel(listdata_)
+	
 
-
+# 加载下载地址
+def GetUrls():
+	file = open("urls.txt")
+	for line in file:
+		url_list.append(line)
+	file.close()
 
 
 
@@ -294,4 +308,6 @@ def GteAll(url_s):
 # python chromedriver.exe
 # ss=['32231383078519', '15886171920049']
 # GetData(ss)
-palist(url)
+GetUrls()
+for url in url_list:
+	palist(url)
