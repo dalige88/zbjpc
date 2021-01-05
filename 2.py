@@ -21,8 +21,8 @@ url_name='猪八戒服务商'
 # overnum=4
 overnum=9999999999
 listdata=[]
-chromedriver_url='F:\chromedriver\chromedriver.exe'
-# chromedriver_url='chromedriver.exe'
+# chromedriver_url='F:\chromedriver\chromedriver.exe'
+chromedriver_url='chromedriver.exe'
 
 
 
@@ -99,6 +99,9 @@ def GetCookie(serachName):
     list_data = list_json_data[0]+"}}"
     list_dt = json.loads(list_data)
 
+    if list_data.find('resultList') < 1:
+        return ''
+
     resultList = list_dt["result"]["resultList"]
 
     pid = ''
@@ -151,7 +154,7 @@ def okpa(http) :
 		response2 = request.urlopen("https:"+src)
 		html2 = response2.read()
 		bf2 = BeautifulSoup(html2,"lxml")
-	
+
 		if(bf2.find_all("div",class_="info-content")):
 			gongsi=bf2.find_all("div",class_="info-content")[0].get_text()		#公司名称	
 		else:
@@ -160,9 +163,7 @@ def okpa(http) :
 		gongsi=gongsi.replace("\n","")
 		print("公司名称2:"+gongsi)
 
-
 		gongsi=glyh(gongsi)
-
 		if gongsi!='无':
 			listdata.append(gongsi)
 		
@@ -171,7 +172,7 @@ def palist(http):
 	if __name__ == "__main__":
 		response = request.urlopen(http)
 		html = response.read()
-		print("开始"+http);
+		print("开始"+http)
 		bf = BeautifulSoup(html,"lxml")
 		global djpage
 		listindex=bf.find_all("div",class_="pagination")[0].find_all("li",class_="active")[0].find('a').get_text();
@@ -179,18 +180,25 @@ def palist(http):
 		list=bf.find_all("a",class_="name")
 		listlen=len(bf.find_all("a",class_="name"))
 		z=0
+
 		for i in list:
 			z=z+1
 
 			if z>=listlen:
-				palist(paindex(http))
-				print(paindex(http));
+				
+				urls = paindex(http)
+				print(urls)
+				if urls == "最后一页":
+					break
+				else:
+					palist(paindex(http))
+				
 			else:
 				i=i.attrs['href'].replace("?fr=djwy", "")
-				newurl="https:"+i+"salerinfo.html";
+				newurl="https:"+i+"salerinfo.html"
 				#print(str(z)+" " + str(listlen));
 				okpa(newurl)
-
+				
 			if z>overnum:
 				break
 		GteAll(listdata)
@@ -215,7 +223,11 @@ def paindex(http):
 
 		list=bf.find_all("div",class_="pagination")[0].find_all("li")
 		page=list[w].find("a").attrs['href']					#下一个
-		return "https://"+http.split("/")[2]+page;
+		
+		if "javascript:" in page:
+			return "最后一页"
+		else:
+			return "https://"+http.split("/")[2]+page;
 
 
 
@@ -274,8 +286,6 @@ def GetData(url_list):
 
 
 def GteAll(url_s):
-	
-
 	list_pid=[]
 
 	for item in url_s:
@@ -283,8 +293,6 @@ def GteAll(url_s):
 		if pids != '':
 			list_pid.append(pids)
 		time.sleep(10)
-
-
 
 	print(list_pid)
 	GetData(list_pid)
