@@ -201,7 +201,7 @@ def palist(http):
 				
 			if z>overnum:
 				break
-		GteAll(listdata)
+		
 
 			
 
@@ -260,8 +260,8 @@ def get_page(urls):
     return reponse.text
 
 # 获取返回字段
-def GetData(url_list):
-    for pid in url_list:
+def GetData(pidlist):
+    for pid in pidlist:
 		############################ 查询详情 ############################ 
 
         driver = webdriver.Chrome(executable_path = chromedriver_url)
@@ -318,4 +318,7 @@ def GetUrls():
 # GetData(ss)
 GetUrls()
 for url in url_list:
+	listdata = []
 	palist(url)
+	# print(len(listdata))
+	GteAll(listdata)
