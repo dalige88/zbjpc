@@ -294,7 +294,7 @@ def GetData(pidlist):
             listdata_.append(listdata_01)
         except:
             print("获取元素报错了....")
-            break
+            GetData(pidlist)
         
         #退出
         driver.close()
