@@ -155,17 +155,32 @@ def okpa(http) :
 		html2 = response2.read()
 		bf2 = BeautifulSoup(html2,"lxml")
 
-		if(bf2.find_all("div",class_="info-content")):
-			gongsi=bf2.find_all("div",class_="info-content")[0].get_text()		#公司名称	
+		if bf2.find_all("h1",class_="title"):
+			title = bf2.find_all("h1",class_="title")[0].get_text()		#店铺名称
+		elif bf2.find_all("div",class_="w-head-pic"):
+			title = bf2.find_all("div",class_="w-head-pic")[0].find('img').attrs['alt']		#店铺名称
 		else:
-			gongsi="无"
+			title = "无"
+		print("店铺名称1:"+title)
+
+		if(bf2.find_all("div",class_="info-content")):
+			gongsi = bf2.find_all("div",class_="info-content")[0].get_text()		#公司名称	
+		else:
+			gongsi = "无"
 			# address="无"
-		gongsi=gongsi.replace("\n","")
+		gongsi = gongsi.replace("\n","")
 		print("公司名称2:"+gongsi)
 
-		gongsi=glyh(gongsi)
-		if gongsi!='无':
+		gongsi = glyh(gongsi)
+		title = glyh(title)
+		
+		if gongsi != '无':
 			listdata.append(gongsi)
+		else:
+			if title != '无':
+				# title = title.decode("utf-8")
+				title = title[0:3]
+				listdata.append(title)
 		
 
 def palist(http):
@@ -262,22 +277,25 @@ def get_page(urls):
 # 获取返回字段
 def GetData(pidlist):
     for pid in pidlist:
-		############################ 查询详情 ############################ 
+		############################ 查询详情 ############################ 		
 
         driver = webdriver.Chrome(executable_path = chromedriver_url)
         driver.get(url_details+str(pid))
-		
-        entName=driver.find_elements_by_class_name("name")[0].get_attribute('innerText')
-        describe=driver.find_elements_by_class_name("content-info-child-brief")[0].get_attribute('innerText')
-        telephone_email=driver.find_elements_by_class_name("content-info-child")[0].get_attribute('innerText').strip("编辑企业信息")
-        website_addr=driver.find_elements_by_class_name("content-info-child")[1].get_attribute('innerText')
-
-        print("000000000000000000"+telephone_email)
-        print("111111111111111111"+website_addr)
-
-        listdata_01 = [entName, describe, telephone_email, website_addr]
-        listdata_.append(listdata_01)
-
+        try:
+            entName=driver.find_elements_by_class_name("name")[0].get_attribute('innerText')
+            describe=driver.find_elements_by_class_name("content-info-child-brief")[0].get_attribute('innerText')
+            telephone_email=driver.find_elements_by_class_name("content-info-child")[0].get_attribute('innerText').strip("编辑企业信息")
+            website_addr=driver.find_elements_by_class_name("content-info-child")[1].get_attribute('innerText')
+            
+            print("邮箱："+telephone_email)
+            print("地址："+website_addr)
+            
+            listdata_01 = [entName, describe, telephone_email, website_addr]
+            listdata_.append(listdata_01)
+        except:
+            print("获取元素报错了....")
+            break
+        
         #退出
         driver.close()
         driver.quit()
