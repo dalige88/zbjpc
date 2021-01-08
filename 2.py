@@ -209,10 +209,14 @@ def palist(http):
 					palist(paindex(http))
 				
 			else:
-				i=i.attrs['href'].replace("?fr=djwy", "")
-				newurl="https:"+i+"salerinfo.html"
-				#print(str(z)+" " + str(listlen));
-				okpa(newurl)
+				try:
+					i=i.attrs['href'].replace("?fr=djwy", "")
+					newurl="https:"+i+"salerinfo.html"
+					#print(str(z)+" " + str(listlen));
+					okpa(newurl)
+				except:
+					break
+				
 				
 			if z>overnum:
 				break
