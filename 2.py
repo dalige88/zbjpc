@@ -78,7 +78,7 @@ def OutExcel(data):
     print('文件保存完毕！（猪八戒'+str(file_name)+'.xls）')
     print('等待中....')
 	# 清空数据
-    listdata_=[]
+    # listdata_=[]
 
 # urlss="http://aiqicha.baidu.com/s?q=%E5%93%88%E5%B0%94%E6%BB%A8%E5%9C%A3%E8%9E%8D%E7%A7%91%E6%8A%80%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8&t=0"
 url_es="https://aiqicha.baidu.com/"
@@ -298,27 +298,36 @@ def GetData(pidlist):
             listdata_.append(listdata_01)
         except:
             print("获取元素报错了....")
-            GetData(pidlist)
+            # GetData(pidlist)
+            break
         
         #退出
         driver.close()
         driver.quit()
         time.sleep(10)
 
+    OutExcel(listdata_)
+
 
 
 def GteAll(url_s):
 	list_pid=[]
+	listdata_=[]
 
 	for item in url_s:
-		pids = GetCookie(item)
-		if pids != '':
-			list_pid.append(pids)
-		time.sleep(10)
+		print("314："+item)
+		try:
+			pids = GetCookie(item)
+			if pids != '':
+				list_pid.append(pids)
+			time.sleep(10)
+		except:
+			break
+		
 
 	print(list_pid)
 	GetData(list_pid)
-	OutExcel(listdata_)
+	# OutExcel(listdata_)
 	
 
 # 加载下载地址
