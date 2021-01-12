@@ -190,8 +190,13 @@ def palist(http):
 		print("开始"+http)
 		bf = BeautifulSoup(html,"lxml")
 		global djpage
-		listindex=bf.find_all("div",class_="pagination")[0].find_all("li",class_="active")[0].find('a').get_text();
-		djpage=listindex
+		try:
+			listindex=bf.find_all("div",class_="pagination")[0].find_all("li",class_="active")[0].find('a').get_text();
+			djpage=listindex
+			
+		except:
+			djpage=1
+			
 		list=bf.find_all("a",class_="name")
 		listlen=len(bf.find_all("a",class_="name"))
 		z=0
@@ -215,7 +220,7 @@ def palist(http):
 					#print(str(z)+" " + str(listlen));
 					okpa(newurl)
 				except:
-					break
+					pass
 				
 				
 			if z>overnum:
@@ -231,17 +236,35 @@ def paindex(http):
 		html = response.read()
 		#print("开始");
 		bf = BeautifulSoup(html,"lxml")
-		listindex=len(bf.find_all("div",class_="pagination")[0].find_all("li"));
-		w=0
-		for d in range(listindex):
-			w=w+1
-			t="active"
-			s=str(bf.find_all("div",class_="pagination")[0].find_all("li")[d])
-			if(t in s):
-				break
+		
+		try:
+			listindex=len(bf.find_all("div",class_="pagination")[0].find_all("li"))
+			w=0
+			for d in range(listindex):
+				w=w+1
+				t="active"
+				s=str(bf.find_all("div",class_="pagination")[0].find_all("li")[d])
+				if(t in s):
+					break
 
-		list=bf.find_all("div",class_="pagination")[0].find_all("li")
-		page=list[w].find("a").attrs['href']					#下一个
+			list=bf.find_all("div",class_="pagination")[0].find_all("li")
+			page=list[w].find("a").attrs['href']					#下一个	
+		except:
+			listindex=0
+			page="javascript:"
+
+
+		# listindex=len(bf.find_all("div",class_="pagination")[0].find_all("li"));
+		w=0
+		# for d in range(listindex):
+		# 	w=w+1
+		# 	t="active"
+		# 	s=str(bf.find_all("div",class_="pagination")[0].find_all("li")[d])
+		# 	if(t in s):
+		# 		break
+
+		# list=bf.find_all("div",class_="pagination")[0].find_all("li")
+		# page=list[w].find("a").attrs['href']					#下一个
 		
 		if "javascript:" in page:
 			return "最后一页"
@@ -299,7 +322,7 @@ def GetData(pidlist):
         except:
             print("获取元素报错了....")
             # GetData(pidlist)
-            break
+            pass
         
         #退出
         driver.close()
