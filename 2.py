@@ -116,7 +116,7 @@ def GetCookie(serachName):
     driver.quit()
 
     print(resultList)
-    print("不要慌！还没完，后面还有货....")
+    print("总共：" + len(list_pid) + "，不要慌！还没完，后面还有货....")
 
 	# cookie_s=driver.get_cookies()
 
