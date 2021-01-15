@@ -8,6 +8,8 @@ import requests
 import json
 import urllib
 from selenium import webdriver
+import urllib.parse
+
 
 # 下载地址
 url_list = []
@@ -269,7 +271,11 @@ def paindex(http):
 		if "javascript:" in page:
 			return "最后一页"
 		else:
-			return "https://"+http.split("/")[2]+page;
+			en_url=page.split('kw=')
+
+			en_url = en_url[0] + "kw=" + urllib.parse.quote(en_url[1])
+
+			return "https://"+http.split("/")[2]+en_url;
 
 
 
